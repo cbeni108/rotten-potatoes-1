@@ -7,9 +7,10 @@ class MoviesController < ApplicationController
   end
 
   def index
+    @all_ratings = Movie.all_ratings
+    @ratings = params[:ratings] || Hash[ @all_ratings.map {|ratings| [ratings, 1]} ]
     @category = params[:category] || @category
-
-    @movies = Movie.order(@category)
+    @movies = Movie.where("rating in (?)", @ratings.keys).find(:all, :order => @category)
   end
 
   def new
