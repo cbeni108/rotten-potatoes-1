@@ -8,8 +8,30 @@ class MoviesController < ApplicationController
 
   def index
     @all_ratings = Movie.all_ratings
-    @ratings = params[:ratings] || Hash[ @all_ratings.map {|ratings| [ratings, 1]} ]
-    @category = params[:category] || @category
+
+    redirect = false
+
+    if params[:ratings]
+      session[:ratings] = params[:ratings]
+    else
+      redirect = true
+    end
+    session[:ratings] = session[:ratings] || Hash[ @all_ratings.map {|ratings| [ratings, 1]} ]
+    @ratings = session[:ratings]
+
+    if params[:category]
+      session[:category] = params[:category]
+    else
+      redirect = true
+    end
+    session[:category] = session[:category] || ""
+    @category = session[:category]
+
+    if redirect
+      flash.keep
+      redirect_to movies_path({:category => @category, :ratings => @ratings})
+    end
+
     @movies = Movie.where("rating in (?)", @ratings.keys).find(:all, :order => @category)
   end
 
