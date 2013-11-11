@@ -31,6 +31,12 @@ module WithinHelpers
 end
 World(WithinHelpers)
 
+Given(/^the following movies exist:$/) do |movies_table|
+  movies_table.hashes.each do |movie|
+    Movie.create!(movie)
+  end
+end
+
 # Single-line step scoper
 When /^(.*) within (.*[^:])$/ do |step, parent|
   with_scope(parent) { When step }
@@ -251,4 +257,8 @@ end
 
 Then /^show me the page$/ do
   save_and_open_page
+end
+
+Then(/^the director of "(.*?)" should be "(.*?)"$/) do |arg1, arg2|
+  Movie.find_by_title(arg1).director == arg2
 end
